@@ -25,6 +25,9 @@ jobs:
       - name: Login to AWS ECR
         run: aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
 
+      - name: Install Docker
+        run: sudo apt-get update && sudo apt-get install -y docker.io
+
       - name: Build and push Docker image to AWS ECR
         run: |
           docker build -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/456949466086.dkr.ecr.us-east-1.amazonaws.com/web_app/web_app .
