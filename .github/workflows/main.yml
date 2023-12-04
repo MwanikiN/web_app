@@ -9,22 +9,21 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     container:
-      image: amazonlinux:2
+      image: amazon/aws-cli:2.x
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
       - name: Set up AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1  # Specify your AWS region
-
-      - name: Login to AWS ECR and build Docker image
         run: |
-          $(aws ecr get-login --no-include-email --region ${{ secrets.AWS_REGION }})
+          echo "[default]" > ~/.aws/credentials
+          echo "aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY_ID }}" >> ~/.aws/credentials
+          echo "aws_secret_access_key = ${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> ~/.aws/credentials
+          echo "region = us-east-1" >> ~/.aws/credentials
+
+      - name: Build and push Docker image to AWS ECR
+        run: |
           docker build -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/456949466086.dkr.ecr.us-east-1.amazonaws.com/web_app/web_app .
           docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/456949466086.dkr.ecr.us-east-1.amazonaws.com/web_app/web_app
 
