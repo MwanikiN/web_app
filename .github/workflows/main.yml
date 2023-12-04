@@ -9,7 +9,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     container:
-      image: amazon/aws-cli:2.x
+      image: amazon/aws-cli:2
 
     steps:
       - name: Checkout repository
