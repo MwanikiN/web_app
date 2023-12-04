@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "us-east-1"  # Specify your desired region
+  region = "us-east-1"  
 }
 
 resource "aws_vpc" "web_app_vpc" {
@@ -16,7 +16,7 @@ resource "aws_subnet" "web_app_public_subnet_1" {
   vpc_id                  = aws_vpc.web_app_vpc.id
   cidr_block              = "10.0.1.0/24"
   availability_zone       = "us-east-1a"
-  map_public_ip_on_launch = true  # Enables automatic assignment of public IP addresses
+  map_public_ip_on_launch = true  
 
   tags = {
     Name = "web-app-public-subnet-1"
