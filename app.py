@@ -23,10 +23,16 @@ def add_user():
     if request.method == 'POST':
         username = request.form['username']
         email = request.form['email']
-        new_user = User(username=username, email=email)
-        db.session.add(new_user)
-        db.session.commit()
-        return redirect(url_for('display_users'))
+        try:
+            new_user = User(username=username, email=email)
+            db.session.add(new_user)
+            db.session.commit()
+            return redirect(url_for('display_users'))
+        except Exception as e:
+            db.session.rollback()
+            error = f"Error adding user: {str(e)}"
+            return render_template('error.html', error=error)  # Create an error.html template to display the error message
+
 
 @app.route('/users')
 def display_users():
