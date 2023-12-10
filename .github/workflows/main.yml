@@ -41,3 +41,8 @@ jobs:
       run: |
         docker tag ${{ secrets.ECR_REPO_NAME }}/web-app $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO_NAME/web-app:latest
         docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO_NAME/web-app:latest
+      env:
+        AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+        AWS_REGION: ${{ secrets.AWS_REGION }}
+        ECR_REPO_NAME: ${{ secrets.ECR_REPO_NAME }}
+
