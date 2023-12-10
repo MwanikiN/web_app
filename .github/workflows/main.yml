@@ -1,0 +1,14 @@
+name: CICD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build and Run Docker
+      run: docker build -t web-app . && docker run -dp 5000:5000 web-app
