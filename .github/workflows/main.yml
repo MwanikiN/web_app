@@ -19,8 +19,8 @@ jobs:
 
     - name: Install Docker
       run: |
-        curl -fsSL https://get.docker.com -o get-docker.sh
-        sudo sh get-docker.sh
+        sudo apt-get update
+        sudo apt-get install docker.io
 
     - name: Install dependencies
       run: |
@@ -60,6 +60,7 @@ jobs:
         mkdir -p ~/.ssh
         echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
+        sudo apt-get install -y docker.io
         ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@54.89.151.102 "docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/my-app:latest && docker run -d -p 5000:5000 $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/my-app:latest"
       env:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
