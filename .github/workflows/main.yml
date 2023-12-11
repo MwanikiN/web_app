@@ -8,7 +8,6 @@ on:
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -18,55 +17,62 @@ jobs:
         with:
           python-version: 3.8
 
-      # Install AWS CLI and Docker
       - name: Install AWS CLI and Docker
         run: |
           sudo apt-get update
           sudo apt-get install -y awscli
           curl -fsSL https://get.docker.com | sudo sh
 
-      - name: Docker Version
+      - name: Check Docker Version
         run: docker --version 
 
-      # Install project dependencies
-      - name: Install dependencies
+      - name: Install Python Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Login to AWS ECR
       - name: Login to AWS ECR
         run: |
-          aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 456949466086.dkr.ecr.us-east-1.amazonaws.com
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
 
-      # Build, tag, push, and pull Docker image
-      - name: Build, Tag, Push and Pull Docker Image
+      - name: Build Docker image
         run: |
           docker build -t my-app .
-          docker tag my-app:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/my-app:latest
-          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/my-app:latest
-          docker pull ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/my-app:latest
+        env:
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
 
-      # Deploy to EC2 instance and run Docker container
-      - name: Deploy to EC2 instance and Run Docker container
+      - name: Tag Docker image
+        run: |
+          docker tag my-app:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/my-app:latest
+        env:
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+
+      - name: Push Docker image to AWS ECR
+        run: |
+          docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/my-app:latest
+        env:
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+
+      - name: Deploy to EC2 instance
         run: |
           mkdir -p ~/.ssh
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           
-          # Add the necessary permissions to the EC2 user for Docker
+          # Add EC2 user to Docker group and restart Docker
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@18.207.116.57 "sudo usermod -aG docker ec2-user"
-          
-          # Restart Docker
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@18.207.116.57 "sudo systemctl restart docker"
           
           # Log in to ECR and pull the Docker image
           aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
           docker pull ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/my-app:latest
-
+          
+          # Optionally, clean up Docker login credentials
+          docker logout 
+          
           # Run the Docker container on the EC2 instance
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@18.207.116.57 "docker run -d -p 5000:5000 ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/my-app:latest"
         env:
