@@ -19,8 +19,8 @@ jobs:
 
     - name: Install Docker
       run: |
-        sudo apt-get update
-        sudo apt-get install docker.io
+        curl -fsSL https://get.docker.com -o get-docker.sh
+        sudo sh get-docker.sh
 
     - name: Install dependencies
       run: |
