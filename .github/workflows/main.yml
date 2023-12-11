@@ -69,6 +69,7 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@54.89.151.102 "sudo usermod -aG docker ec2-user"
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@54.89.151.102 "sudo systemctl restart docker"
+          aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@54.89.151.102 "docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/my-app:latest && docker run -d -p 5000:5000 $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/my-app:latest"
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
