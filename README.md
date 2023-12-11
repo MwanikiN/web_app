@@ -63,31 +63,6 @@ Ensure the following secrets are configured in the GitHub repository:
 
 3. **Accessing the Flask App:**
    - The Flask app is accessible on the public IP address of the EC2 instance at `http://<EC2-IP>:5000`.
-   - The authenticity of host 'ec2-18-207-116-57.compute-1.amazonaws.com (18.207.116.57)' can't be established.
-ED25519 key fingerprint is SHA256:Xidhd+sBnhKpcZ2IEyHEhvPGcIO1f0qSNLwlM5/+dog.
-This host key is known by the following other names/addresses:
-    ~/.ssh/known_hosts:10: [hashed name]
-Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
-Warning: Permanently added 'ec2-18-207-116-57.compute-1.amazonaws.com' (ED25519) to the list of known hosts.
-   ,     #_
-   ~\_  ####_        Amazon Linux 2023
-  ~~  \_#####\
-  ~~     \###|
-  ~~       \#/ ___   https://aws.amazon.com/linux/amazon-linux-2023
-   ~~       V~' '->
-    ~~~         /
-      ~~._.   _/
-         _/ _/
-       _/m/'
-Last login: Sat Dec  9 13:19:06 2023 from 102.68.79.231
-[ec2-user@ip-172-31-27-139 ~]$ docker images
-REPOSITORY   TAG       IMAGE ID   CREATED   SIZE
-[ec2-user@ip-172-31-27-139 ~]$ docker ps
-CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
-[ec2-user@ip-172-31-27-139 ~]$ docker ps
-CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
-[ec2-user@ip-172-31-27-139 ~]$ docker images
-REPOSITORY   TAG       IMAGE ID   CREATED   SIZE
 
 
 ## Conclusion
