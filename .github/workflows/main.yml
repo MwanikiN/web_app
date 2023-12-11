@@ -69,17 +69,14 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@18.207.116.57 "sudo usermod -aG docker ec2-user"
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@18.207.116.57 "sudo systemctl restart docker"
-          docker logout 
-          aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
-          docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/my-app:latest
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@18.207.116.57 "docker logout"
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@18.207.116.57 "$(aws ecr get-login --no-include-email --region $AWS_REGION)"
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@18.207.116.57 "docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/my-app:latest"
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@18.207.116.57 "docker run -d -p 5000:5000 $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/my-app:latest"
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
   
 
 
