@@ -62,6 +62,8 @@ jobs:
           AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
 
+       # ... (other steps remain the same)
+      
       - name: Deploy to EC2 instance
         run: |
           mkdir -p ~/.ssh
@@ -69,7 +71,6 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@18.207.116.57 "sudo usermod -aG docker ec2-user"
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@18.207.116.57 "sudo systemctl restart docker"
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@18.207.116.57 "docker logout"
           aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
           docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/my-app:latest
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@18.207.116.57 "docker run -d -p 5000:5000 $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/my-app:latest"
@@ -79,6 +80,7 @@ jobs:
           AWS_REGION: ${{ secrets.AWS_REGION }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
 
   
 
