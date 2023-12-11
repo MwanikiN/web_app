@@ -67,8 +67,8 @@ jobs:
           mkdir -p ~/.ssh
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@54.89.151.102 "sudo usermod -aG docker ec2-user"
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@54.89.151.102 "sudo systemctl restart docker"
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@3.80.99.108 "sudo usermod -aG docker ec2-user"
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@3.80.99.108 "sudo systemctl restart docker"
           docker logout 
           aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
           docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/my-app:latest
@@ -81,7 +81,7 @@ jobs:
 
       - name: Access Deployed Application
         run: |
-          curl http://54.89.151.102:5000
+          curl http://3.80.99.108:5000
 
 
 
