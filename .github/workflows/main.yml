@@ -73,9 +73,8 @@ jobs:
 
       - name: Deploy to EC2 instance
         run: |
-          mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@${{ steps.get_ip.outputs.ip_address }} "sudo yum install -y docker"
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@${{ steps.get_ip.outputs.ip_address }} "sudo groupadd docker || true"
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@${{ steps.get_ip.outputs.ip_address }} "sudo usermod -aG docker ec2-user"
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@${{ steps.get_ip.outputs.ip_address }} "sudo systemctl restart docker"
           docker logout 
